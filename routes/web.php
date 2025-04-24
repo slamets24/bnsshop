@@ -14,9 +14,27 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard/Index');
+    })->name('dashboard');
+
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/products', function () {
+            return Inertia::render('Dashboard/products/Index');
+        })->name('products');
+
+        Route::resource('categories', \App\Http\Controllers\CategoryController::class)->except(['show']);
+
+        Route::get('/transactions', function () {
+            return Inertia::render('Dashboard/transactions/Index');
+        })->name('transactions');
+
+        Route::get('/shipments', function () {
+            return Inertia::render('Dashboard/shipments/Index');
+        })->name('shipments');
+    });
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
