@@ -19,6 +19,7 @@ const showDeleteModal = ref(false);
 const showViewModal = ref(false);
 const productToDelete = ref(null);
 const selectedProduct = ref(null);
+const activeImageIndex = ref(0);
 const notification = ref({
     show: false,
     type: 'success',
@@ -61,12 +62,31 @@ if (props.message) {
     showNotification('success', props.message);
 }
 
+const changeActiveImage = (index) => {
+    activeImageIndex.value = index;
+};
+
+const closeViewModal = () => {
+    showViewModal.value = false;
+    activeImageIndex.value = 0;
+};
+
 watch(search, debounce((value) => {
     router.get(route('dashboard.products.index'),
         { search: value },
         { preserveState: true, preserveScroll: true }
     );
 }, 300));
+
+// Add price formatter function in script setup
+const formatPrice = (price) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(price);
+};
 </script>
 
 <template>
@@ -186,7 +206,7 @@ watch(search, debounce((value) => {
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            Rp {{ product.price.toLocaleString('id-ID') }}
+                                            {{ formatPrice(product.price) }}
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -298,13 +318,13 @@ watch(search, debounce((value) => {
             :message="'Apakah Anda yakin ingin menghapus produk ' + (productToDelete?.name || '') + '?'"
             @close="showDeleteModal = false" @confirm="confirmDelete" class="bg-white dark:bg-gray-800" />
 
-        <Modal :show="showViewModal" @close="showViewModal = false" maxWidth="2xl">
+        <Modal :show="showViewModal" @close="closeViewModal" maxWidth="2xl">
             <div class="p-4 sm:p-6 bg-white dark:bg-[#1e1e1e]">
                 <div class="flex items-center justify-between mb-4 sm:mb-6">
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
                         Detail Produk
                     </h2>
-                    <button @click="showViewModal = false"
+                    <button @click="closeViewModal"
                         class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -318,14 +338,16 @@ watch(search, debounce((value) => {
                     <div v-if="selectedProduct.images && selectedProduct.images.length > 0" class="mb-4 sm:mb-6">
                         <div
                             class="relative h-48 sm:h-64 md:h-96 bg-gray-100 dark:bg-[#252525] rounded-lg overflow-hidden">
-                            <img :src="selectedProduct.images[0].full_url" :alt="selectedProduct.name"
+                            <img :src="selectedProduct.images[activeImageIndex].full_url" :alt="selectedProduct.name"
                                 class="w-full h-full object-contain">
                         </div>
                         <!-- Thumbnail Gallery -->
                         <div v-if="selectedProduct.images.length > 1"
                             class="mt-2 sm:mt-4 grid grid-cols-4 sm:grid-cols-6 gap-2">
                             <div v-for="(image, index) in selectedProduct.images" :key="index"
-                                class="relative h-14 sm:h-16 bg-gray-100 dark:bg-[#252525] rounded-md overflow-hidden cursor-pointer hover:opacity-75 transition">
+                                @click="changeActiveImage(index)"
+                                class="relative h-14 sm:h-16 bg-gray-100 dark:bg-[#252525] rounded-md overflow-hidden cursor-pointer hover:opacity-75 transition"
+                                :class="{ 'ring-2 ring-indigo-500 dark:ring-indigo-400': activeImageIndex === index }">
                                 <img :src="image.full_url" :alt="'${selectedProduct.name} image ' + (index + 1)"
                                     class="w-full h-full object-cover">
                             </div>
@@ -366,7 +388,7 @@ watch(search, debounce((value) => {
                             <div class="bg-gray-50 dark:bg-[#252525] rounded-lg p-4 sm:p-6">
                                 <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">Harga</h3>
                                 <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-300">
-                                    Rp {{ selectedProduct.price.toLocaleString('id-ID') }}
+                                    {{ formatPrice(selectedProduct.price) }}
                                 </p>
                             </div>
 
@@ -454,7 +476,7 @@ watch(search, debounce((value) => {
                 </div>
 
                 <div class="mt-6 sm:mt-8 flex justify-end space-x-3">
-                    <button type="button" @click="showViewModal = false"
+                    <button type="button" @click="closeViewModal"
                         class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-100 dark:bg-[#323232] text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600">
                         Tutup
                     </button>
