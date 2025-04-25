@@ -20,10 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
-        Route::get('/products', function () {
-            return Inertia::render('Dashboard/products/Index');
-        })->name('products');
-
+        Route::resource('products', \App\Http\Controllers\ProductController::class)->except(['show']);
         Route::resource('categories', \App\Http\Controllers\CategoryController::class)->except(['show']);
 
         Route::get('/transactions', function () {

@@ -10,7 +10,8 @@ const props = defineProps({
 });
 
 const form = useForm({
-    name: props.category.name
+    name: props.category.name,
+    code_sku: props.category.code_sku
 });
 
 const submit = () => {
@@ -84,6 +85,18 @@ const submit = () => {
                                     :class="{ 'border-red-500': form.errors.name }" />
                                 <div v-if="form.errors.name" class="mt-2 text-sm text-red-600 dark:text-red-400">
                                     {{ form.errors.name }}
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="code_sku"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Code
+                                    SKU</label>
+                                <input type="text" id="code_sku" v-model="form.code_sku"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                    :class="{ 'border-red-500': form.errors.code_sku }" />
+                                <div v-if="form.errors.code_sku" class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    {{ form.errors.code_sku }}
                                 </div>
                             </div>
 

@@ -16,6 +16,16 @@ class Transaction extends Model
         'total',
         'status',
         'note',
+        'xendit_invoice_id',
+        'payment_method',
+        'payment_channel',
+        'paid_at',
+        'order_type',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
     ];
 
     public function items()
@@ -31,5 +41,10 @@ class Transaction extends Model
     public function shipment()
     {
         return $this->hasOne(Shipment::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

@@ -10,6 +10,7 @@ import { Link } from '@inertiajs/vue3';
 const showingNavigationDropdown = ref(false);
 const isDarkMode = ref(false);
 const isSidebarCollapsed = ref(false);
+const isMobileSidebarOpen = ref(false);
 
 const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value;
@@ -26,6 +27,10 @@ const toggleSidebar = () => {
     isSidebarCollapsed.value = !isSidebarCollapsed.value;
 };
 
+const toggleMobileSidebar = () => {
+    isMobileSidebarOpen.value = !isMobileSidebarOpen.value;
+};
+
 // Initialize dark mode based on system preference
 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     isDarkMode.value = true;
@@ -38,12 +43,28 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
 
 <template>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <!-- Mobile Sidebar Toggle Button -->
+        <button @click="toggleMobileSidebar"
+            class="fixed bottom-4 right-4 z-50 md:hidden bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div v-if="isMobileSidebarOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            @click="toggleMobileSidebar">
+        </div>
+
         <!-- Sidebar -->
         <aside :class="{
             'w-64': !isSidebarCollapsed,
-            'w-20': isSidebarCollapsed
+            'w-20': isSidebarCollapsed,
+            'translate-x-0': isMobileSidebarOpen,
+            '-translate-x-full': !isMobileSidebarOpen
         }"
-            class="fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+            class="fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform md:translate-x-0">
             <!-- Logo -->
             <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                 <Link :href="route('dashboard')" class="flex items-center">
@@ -53,12 +74,19 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 </span>
                 </Link>
                 <button @click="toggleSidebar"
-                    class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hidden md:block">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path v-if="isSidebarCollapsed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                         <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button @click="toggleMobileSidebar"
+                    class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -76,9 +104,9 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 <span v-if="!isSidebarCollapsed" class="ml-3">Beranda</span>
                 </Link>
 
-                <Link :href="route('dashboard.products')" :class="{
-                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.products'),
-                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.products')
+                <Link :href="route('dashboard.products.index')" :class="{
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.products.index'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.products.index')
                 }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,8 +164,9 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
 
         <!-- Main Content -->
         <div :class="{
-            'ml-64': !isSidebarCollapsed,
-            'ml-20': isSidebarCollapsed
+            'md:ml-64': !isSidebarCollapsed,
+            'md:ml-20': isSidebarCollapsed,
+            'ml-0': true
         }" class="transition-all duration-300">
             <!-- Page Heading -->
             <header class="bg-white shadow dark:bg-gray-800" v-if="$slots.header">
@@ -196,5 +225,10 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
 <style scoped>
 .router-link-active {
     @apply bg-gray-100 dark:bg-gray-700;
+}
+
+/* Add smooth transition for sidebar */
+aside {
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 </style>
