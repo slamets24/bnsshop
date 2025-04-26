@@ -31,10 +31,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/products/{product}/images', [ProductController::class, 'uploadImages'])->name('products.images.upload');
         Route::post('/products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->name('products.toggle-active');
 
-        Route::get('/transactions', function () {
-            return Inertia::render('Dashboard/transactions/Index');
-        })->name('transactions');
-
         Route::get('/shipments', function () {
             return Inertia::render('Dashboard/shipments/Index');
         })->name('shipments');

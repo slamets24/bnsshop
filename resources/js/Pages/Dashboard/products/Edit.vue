@@ -276,19 +276,22 @@ const quillOptions = {
                 <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
                         <li class="mr-2">
-                            <button @click="activeTab = 'product'" class="inline-block p-4 rounded-t-lg"
+                            <button @click="activeTab = 'product'"
+                                class="inline-block p-4 rounded-t-lg dark:text-gray-400"
                                 :class="activeTab === 'product' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
                                 Data Produk
                             </button>
                         </li>
                         <li class="mr-2">
-                            <button @click="activeTab = 'images'" class="inline-block p-4 rounded-t-lg"
+                            <button @click="activeTab = 'images'"
+                                class="inline-block p-4 rounded-t-lg dark:text-gray-400"
                                 :class="activeTab === 'images' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
                                 Gambar Produk
                             </button>
                         </li>
                         <li class="mr-2">
-                            <button @click="activeTab = 'links'" class="inline-block p-4 rounded-t-lg"
+                            <button @click="activeTab = 'links'"
+                                class="inline-block p-4 rounded-t-lg dark:text-gray-400"
                                 :class="activeTab === 'links' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
                                 Link Marketplace
                             </button>
