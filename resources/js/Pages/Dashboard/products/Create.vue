@@ -2,6 +2,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const props = defineProps({
     categories: Array
@@ -74,6 +76,21 @@ const removeImage = (index) => {
     const newImages = [...form.images];
     newImages.splice(index, 1);
     form.images = newImages;
+};
+
+// Add Quill configuration
+const quillOptions = {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link']
+        ]
+    },
+    formats: ['header', 'bold', 'italic', 'underline', 'list', 'bullet', 'link'],
+    bounds: '.quill-editor'
 };
 
 const submit = () => {
@@ -364,9 +381,12 @@ const submit = () => {
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         Deskripsi <span class="text-red-500">*</span>
                                     </label>
-                                    <textarea id="description" v-model="form.description" rows="4"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.description }"></textarea>
+                                    <div class="quill-editor">
+                                        <QuillEditor v-model:content="form.description" :options="quillOptions"
+                                            contentType="html"
+                                            class="mt-1 w-full border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white min-h-[300px]"
+                                            :class="{ 'border-red-500': form.errors.description }" />
+                                    </div>
                                     <div v-if="form.errors.description"
                                         class="mt-2 text-sm text-red-600 dark:text-red-400">
                                         {{ form.errors.description }}

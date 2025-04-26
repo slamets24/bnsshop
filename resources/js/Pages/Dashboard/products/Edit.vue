@@ -1,40 +1,62 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import ConfirmationModal from '@/Components/ConfirmationModal.vue';
+import SlideNotification from '@/Components/SlideNotification.vue';
 
 const props = defineProps({
     product: Object,
-    categories: Array
+    categories: Array,
+    flash: Object
 });
 
-const form = useForm({
+// Form untuk data produk utama
+const productForm = useForm({
     name: props.product.name,
     description: props.product.description,
     price: props.product.price,
     stock: props.product.stock,
     category_id: props.product.category_id,
-    images: [],
-    shopee_url: props.product.shopee_url,
-    tokopedia_url: props.product.tokopedia_url,
-    whatsapp_number: props.product.whatsapp_number
 });
 
+// Form untuk link marketplace
+const linksForm = useForm({
+    shopee_url: props.product.links?.shopee_url || '',
+    tokopedia_url: props.product.links?.tokopedia_url || '',
+    whatsapp_number: props.product.links?.whatsapp_number || ''
+});
+
+// Form untuk gambar
+const imagesForm = useForm({
+    images: [],
+});
+
+// State untuk UI
 const imagePreview = ref([]);
 const skuPreview = ref(props.product.sku);
 const originalCategoryId = props.product.category_id;
+const showDeleteModal = ref(false);
+const imageToDelete = ref(null);
+const activeTab = ref('product'); // 'product', 'links', atau 'images'
+
+const notification = ref({
+    show: false,
+    message: '',
+    type: 'success',
+});
 
 // Watch for category changes to update SKU preview
-watch(() => form.category_id, (newCategoryId) => {
+watch(() => productForm.category_id, (newCategoryId) => {
     if (newCategoryId === originalCategoryId) {
         // If category hasn't changed, show original SKU
         skuPreview.value = props.product.sku;
     } else if (newCategoryId) {
         const category = props.categories.find(c => c.id === parseInt(newCategoryId));
         if (category) {
-            // Generate preview of new SKU
-            const productCount = 1; // This will be handled by backend
+            const productCount = 1;
             skuPreview.value = `${category.code_sku}-${String(productCount).padStart(3, '0')}*`;
         }
     } else {
@@ -42,15 +64,43 @@ watch(() => form.category_id, (newCategoryId) => {
     }
 });
 
-const router = useRouter();
+watch(
+    () => usePage().props.flash,
+    (flash) => {
+        if (flash.message) {
+            notification.value = {
+                show: true,
+                message: flash.message.text,
+                type: flash.message.type
+            };
+        }
+    }
+);
 
 const handleImagesUpload = (e) => {
     const files = e.target.files;
-    // Append new files instead of replacing
-    form.images = [...form.images, ...files];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const maxSize = 2048 * 1024;
 
-    // Generate previews for new files only
-    Array.from(files).forEach(file => {
+    const validFiles = Array.from(files).filter(file => {
+        const isValidType = allowedTypes.includes(file.type);
+        const isValidSize = file.size <= maxSize;
+
+        if (!isValidType) {
+            console.error(`File ${file.name} is not a valid image type. Allowed types: JPEG, JPG, PNG`);
+        }
+        if (!isValidSize) {
+            console.error(`File ${file.name} is too large. Maximum size is 2MB`);
+        }
+
+        return isValidType && isValidSize;
+    });
+
+    // Add valid files to form
+    imagesForm.images = [...imagesForm.images, ...validFiles];
+
+    // Create previews for valid files
+    validFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
             imagePreview.value.push(e.target.result);
@@ -61,27 +111,111 @@ const handleImagesUpload = (e) => {
 
 const removeImage = (index) => {
     imagePreview.value.splice(index, 1);
-    const newImages = [...form.images];
+    const newImages = [...imagesForm.images];
     newImages.splice(index, 1);
-    form.images = newImages;
+    imagesForm.images = newImages;
 };
 
 const deleteExistingImage = (imageId) => {
-    if (confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
-        router.delete(route('dashboard.products.images.destroy', imageId), {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: () => {
-                // Image will be removed from the list automatically by Inertia refresh
-            }
-        });
-    }
+    imageToDelete.value = imageId;
+    showDeleteModal.value = true;
 };
 
-const submit = () => {
-    form.post(route('dashboard.products.update', props.product.id), {
-        _method: 'PUT'
+const confirmDelete = () => {
+    if (!imageToDelete.value) return;
+
+    router.delete(route('dashboard.products.images.delete', {
+        product: props.product.id,
+        image: imageToDelete.value
+    }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showDeleteModal.value = false;
+            imageToDelete.value = null;
+            // Refresh halaman untuk mendapatkan data terbaru
+            router.reload({ only: ['product', 'flash'] });
+        },
+        onError: () => {
+            showDeleteModal.value = false;
+            imageToDelete.value = null;
+        }
     });
+};
+
+const cancelDelete = () => {
+    showDeleteModal.value = false;
+    imageToDelete.value = null;
+};
+
+// Validasi jumlah gambar
+const validateImageCount = () => {
+    const totalImages = (props.product.images?.length || 0) + imagePreview.value.length;
+    if (totalImages < 1) {
+        notification.value = {
+            show: true,
+            message: 'Produk harus memiliki minimal 1 gambar.',
+            type: 'error'
+        };
+        return false;
+    }
+    return true;
+};
+
+const updateProduct = () => {
+    productForm.put(route('dashboard.products.update', props.product.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            productForm.reset();
+            notification.value = {
+                show: true,
+                message: 'Data produk berhasil diperbarui',
+                type: 'success'
+            };
+        }
+    });
+};
+
+const updateLinks = () => {
+    linksForm.put(route('dashboard.products.links.update', props.product.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            notification.value = {
+                show: true,
+                message: 'Link marketplace berhasil diperbarui',
+                type: 'success'
+            };
+            router.reload({ only: ['product'] });
+        }
+    });
+};
+
+const uploadImages = () => {
+    if (!validateImageCount()) {
+        return;
+    }
+
+    imagesForm.post(route('dashboard.products.images.upload', props.product.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            imagesForm.reset();
+            imagePreview.value = [];
+            router.reload({ only: ['product'] });
+        }
+    });
+};
+
+const quillOptions = {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link']
+        ]
+    },
+    formats: ['header', 'bold', 'italic', 'underline', 'list', 'bullet', 'link'],
+    bounds: '.quill-editor'
 };
 </script>
 
@@ -139,16 +273,141 @@ const submit = () => {
                     </ol>
                 </nav>
 
+                <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                        <li class="mr-2">
+                            <button @click="activeTab = 'product'" class="inline-block p-4 rounded-t-lg"
+                                :class="activeTab === 'product' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
+                                Data Produk
+                            </button>
+                        </li>
+                        <li class="mr-2">
+                            <button @click="activeTab = 'images'" class="inline-block p-4 rounded-t-lg"
+                                :class="activeTab === 'images' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
+                                Gambar Produk
+                            </button>
+                        </li>
+                        <li class="mr-2">
+                            <button @click="activeTab = 'links'" class="inline-block p-4 rounded-t-lg"
+                                :class="activeTab === 'links' ? 'text-indigo-600 border-b-2 border-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'">
+                                Link Marketplace
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <form @submit.prevent="submit" class="max-w-6xl">
+                        <form @submit.prevent="updateProduct" class="max-w-6xl" v-if="activeTab === 'product'">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label for="name"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama
+                                        Produk</label>
+                                    <input type="text" id="name" v-model="productForm.name"
+                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                        :class="{ 'border-red-500': productForm.errors.name }" />
+                                    <div v-if="productForm.errors.name"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                        {{ productForm.errors.name }}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="sku"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU
+                                        (Auto-generated)</label>
+                                    <input type="text" id="sku" :value="skuPreview"
+                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-gray-50 dark:bg-gray-600 cursor-not-allowed"
+                                        readonly />
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                        v-if="productForm.category_id !== originalCategoryId">
+                                        SKU akan berubah karena kategori diubah
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div>
+                                    <label for="price"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
+                                    <input type="number" id="price" v-model="productForm.price"
+                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                        :class="{ 'border-red-500': productForm.errors.price }" />
+                                    <div v-if="productForm.errors.price"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                        {{ productForm.errors.price }}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="stock"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stok</label>
+                                    <input type="number" id="stock" v-model="productForm.stock"
+                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                        :class="{ 'border-red-500': productForm.errors.stock }" />
+                                    <div v-if="productForm.errors.stock"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                        {{ productForm.errors.stock }}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="category_id"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori</label>
+                                    <select id="category_id" v-model="productForm.category_id"
+                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                        :class="{ 'border-red-500': productForm.errors.category_id }">
+                                        <option value="">Pilih Kategori</option>
+                                        <option v-for="category in categories" :key="category.id" :value="category.id">
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
+                                    <div v-if="productForm.errors.category_id"
+                                        class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                        {{ productForm.errors.category_id }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <label for="description"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi</label>
+                                <div class="quill-editor">
+                                    <QuillEditor v-model:content="productForm.description" :options="quillOptions"
+                                        contentType="html"
+                                        class="mt-1 w-full border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white min-h-[300px]"
+                                        :class="{ 'border-red-500': productForm.errors.description }" />
+                                </div>
+                                <div v-if="productForm.errors.description"
+                                    class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    {{ productForm.errors.description }}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-4">
+                                <button type="submit"
+                                    class="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50"
+                                    :disabled="productForm.processing">
+                                    Simpan Data Produk
+                                </button>
+                                <Link :href="route('dashboard.products.index')"
+                                    class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                Batal
+                                </Link>
+                            </div>
+                        </form>
+
+                        <!-- Image Upload Form -->
+                        <form @submit.prevent="uploadImages" class="max-w-6xl" v-if="activeTab === 'images'">
                             <!-- Image Upload Section -->
                             <div class="mb-6">
                                 <label for="images"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gambar
-                                    Produk</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload
+                                    Gambar
+                                    Baru</label>
                                 <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg"
-                                    :class="{ 'border-red-500': form.errors.images }">
+                                    :class="{ 'border-red-500': imagesForm.errors.images }">
                                     <div class="space-y-1 text-center">
                                         <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
                                             viewBox="0 0 48 48" aria-hidden="true">
@@ -170,6 +429,7 @@ const submit = () => {
                                         </p>
                                     </div>
                                 </div>
+
                                 <!-- Image Preview -->
                                 <div v-if="imagePreview.length"
                                     class="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
@@ -191,12 +451,17 @@ const submit = () => {
                                     </div>
                                 </div>
 
+                                <h3 class="mt-8 mb-3 text-lg font-semibold text-gray-700 dark:text-gray-300">Gambar
+                                    Produk Saat
+                                    Ini</h3>
+
                                 <!-- Existing Product Images -->
                                 <div v-if="product.images && product.images.length > 0"
-                                    class="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                                    class="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                                     <div v-for="image in product.images" :key="image.id"
                                         class="relative group w-24 h-24 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
-                                        <img :src="image.url" class="w-full h-full object-cover" />
+                                        <img :src="image.full_url || image.image_url"
+                                            class="w-full h-full object-cover" />
                                         <div
                                             class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <button type="button" @click.prevent="deleteExistingImage(image.id)"
@@ -211,93 +476,35 @@ const submit = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="form.errors.images" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                    {{ form.errors.images }}
+                                <div v-if="imagesForm.errors.images"
+                                    class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    {{ imagesForm.errors.images }}
                                 </div>
                             </div>
 
-                            <!-- Name and SKU Row -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="name"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama
-                                        Produk</label>
-                                    <input type="text" id="name" v-model="form.name"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.name }" />
-                                    <div v-if="form.errors.name" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.name }}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="sku"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU
-                                        (Auto-generated)</label>
-                                    <input type="text" id="sku" :value="skuPreview"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-gray-50 dark:bg-gray-600 cursor-not-allowed"
-                                        readonly />
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400"
-                                        v-if="form.category_id !== originalCategoryId">
-                                        SKU akan berubah karena kategori diubah
-                                    </p>
-                                </div>
+                            <div class="flex items-center gap-4 mt-6">
+                                <button type="submit"
+                                    class="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50"
+                                    :disabled="imagesForm.processing">
+                                    Upload Gambar Baru
+                                </button>
                             </div>
+                        </form>
 
-                            <!-- Price, Stock, and Category Row -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                                <div>
-                                    <label for="price"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Harga</label>
-                                    <input type="number" id="price" v-model="form.price"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.price }" />
-                                    <div v-if="form.errors.price" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.price }}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="stock"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stok</label>
-                                    <input type="number" id="stock" v-model="form.stock"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.stock }" />
-                                    <div v-if="form.errors.stock" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.stock }}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="category_id"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori</label>
-                                    <select id="category_id" v-model="form.category_id"
-                                        class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.category_id }">
-                                        <option value="">Pilih Kategori</option>
-                                        <option v-for="category in categories" :key="category.id" :value="category.id">
-                                            {{ category.name }}
-                                        </option>
-                                    </select>
-                                    <div v-if="form.errors.category_id"
-                                        class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.category_id }}
-                                    </div>
-                                </div>
-                            </div>
-
+                        <!-- Marketplace Links Form -->
+                        <form @submit.prevent="updateLinks" class="max-w-6xl" v-if="activeTab === 'links'">
                             <!-- Product Links Row -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                 <div>
                                     <label for="shopee_url"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Link
                                         Shopee</label>
-                                    <input type="url" id="shopee_url" v-model="form.shopee_url"
+                                    <input type="url" id="shopee_url" v-model="linksForm.shopee_url"
                                         class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.shopee_url }" />
-                                    <div v-if="form.errors.shopee_url"
+                                        :class="{ 'border-red-500': linksForm.errors.shopee_url }" />
+                                    <div v-if="linksForm.errors.shopee_url"
                                         class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.shopee_url }}
+                                        {{ linksForm.errors.shopee_url }}
                                     </div>
                                 </div>
 
@@ -305,12 +512,12 @@ const submit = () => {
                                     <label for="tokopedia_url"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Link
                                         Tokopedia</label>
-                                    <input type="url" id="tokopedia_url" v-model="form.tokopedia_url"
+                                    <input type="url" id="tokopedia_url" v-model="linksForm.tokopedia_url"
                                         class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.tokopedia_url }" />
-                                    <div v-if="form.errors.tokopedia_url"
+                                        :class="{ 'border-red-500': linksForm.errors.tokopedia_url }" />
+                                    <div v-if="linksForm.errors.tokopedia_url"
                                         class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.tokopedia_url }}
+                                        {{ linksForm.errors.tokopedia_url }}
                                     </div>
                                 </div>
 
@@ -318,43 +525,35 @@ const submit = () => {
                                     <label for="whatsapp_number"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor
                                         WhatsApp</label>
-                                    <input type="tel" id="whatsapp_number" v-model="form.whatsapp_number"
+                                    <input type="tel" id="whatsapp_number" v-model="linksForm.whatsapp_number"
                                         class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                        :class="{ 'border-red-500': form.errors.whatsapp_number }" />
-                                    <div v-if="form.errors.whatsapp_number"
+                                        :class="{ 'border-red-500': linksForm.errors.whatsapp_number }" />
+                                    <div v-if="linksForm.errors.whatsapp_number"
                                         class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                        {{ form.errors.whatsapp_number }}
+                                        {{ linksForm.errors.whatsapp_number }}
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="mb-6">
-                                <label for="description"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi</label>
-                                <textarea id="description" v-model="form.description" rows="4"
-                                    class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
-                                    :class="{ 'border-red-500': form.errors.description }"></textarea>
-                                <div v-if="form.errors.description" class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                    {{ form.errors.description }}
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-4">
                                 <button type="submit"
                                     class="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50"
-                                    :disabled="form.processing">
-                                    Simpan
+                                    :disabled="linksForm.processing">
+                                    Simpan Link Marketplace
                                 </button>
-                                <Link :href="route('dashboard.products.index')"
-                                    class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                                Batal
-                                </Link>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+
+        <ConfirmationModal :show="showDeleteModal" @close="cancelDelete" @confirm="confirmDelete"
+            :title="'Konfirmasi Penghapusan'"
+            :message="'Apakah Anda yakin ingin menghapus gambar ini? Tindakan ini tidak dapat dibatalkan.'">
+        </ConfirmationModal>
+
+        <SlideNotification v-if="notification.show" :message="notification.message" :type="notification.type"
+            @close="notification.show = false" />
     </AuthenticatedLayout>
 </template>

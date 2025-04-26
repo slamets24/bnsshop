@@ -7,6 +7,7 @@ import debounce from 'lodash/debounce';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import Modal from '@/Components/Modal.vue';
 import SlideNotification from '@/Components/SlideNotification.vue';
+import axios from 'axios';
 
 const props = defineProps({
     products: Object,
@@ -87,6 +88,34 @@ const formatPrice = (price) => {
         maximumFractionDigits: 0
     }).format(price);
 };
+
+const toggleActive = async (product) => {
+    try {
+        const response = await axios.post(route('dashboard.products.toggle-active', product.id));
+
+        if (response.data.success) {
+            product.is_active = !product.is_active;
+            notification.value = {
+                show: true,
+                type: 'success',
+                message: response.data.message
+            };
+        } else {
+            notification.value = {
+                show: true,
+                type: 'error',
+                message: response.data.message
+            };
+        }
+    } catch (error) {
+        console.error('Error toggling product status:', error);
+        notification.value = {
+            show: true,
+            type: 'error',
+            message: error.response?.data?.message || 'Terjadi kesalahan saat mengubah status produk'
+        };
+    }
+};
 </script>
 
 <template>
@@ -149,7 +178,7 @@ const formatPrice = (price) => {
                         </div>
 
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 ">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th scope="col"
@@ -157,7 +186,7 @@ const formatPrice = (price) => {
                                             No
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ">
                                             Nama Produk
                                         </th>
                                         <th scope="col"
@@ -177,10 +206,6 @@ const formatPrice = (price) => {
                                             Stok
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Tanggal Dibuat
-                                        </th>
-                                        <th scope="col"
                                             class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Aksi
                                         </th>
@@ -193,7 +218,7 @@ const formatPrice = (price) => {
                                             {{ products.from + index }}
                                         </td>
                                         <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[200px] overflow-hidden truncate">
                                             {{ product.name }}
                                         </td>
                                         <td
@@ -212,10 +237,6 @@ const formatPrice = (price) => {
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ product.stock }}
                                         </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ new Date(product.created_at).toLocaleDateString('id-ID') }}
-                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-3">
                                                 <button @click="viewProduct(product)"
@@ -228,6 +249,18 @@ const formatPrice = (price) => {
                                                         <path stroke-linecap="round" stroke-linejoin="round"
                                                             stroke-width="2"
                                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </button>
+                                                <button @click="toggleActive(product)" :class="[
+                                                    'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100',
+                                                    product.is_active ? 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300' : 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300'
+                                                ]"
+                                                    :title="product.is_active ? 'Nonaktifkan Produk' : 'Aktifkan Produk'">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            :d="product.is_active ? 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'" />
                                                     </svg>
                                                 </button>
                                                 <Link :href="route('dashboard.products.edit', product.id)"
@@ -468,10 +501,8 @@ const formatPrice = (price) => {
                     <!-- Deskripsi - Full width -->
                     <div class="bg-gray-50 dark:bg-[#252525] rounded-lg p-4 sm:p-6">
                         <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">Deskripsi</h3>
-                        <p
-                            class="text-sm sm:text-base text-gray-900 dark:text-gray-300 whitespace-pre-line leading-relaxed">
-                            {{ selectedProduct.description }}
-                        </p>
+                        <div class="ql-content text-sm sm:text-base text-gray-900 dark:text-gray-300"
+                            v-html="selectedProduct.description"></div>
                     </div>
                 </div>
 
@@ -509,5 +540,79 @@ const formatPrice = (price) => {
     border-radius: 4px;
     white-space: nowrap;
     z-index: 10;
+}
+
+/* Quill content styles */
+.ql-content {
+    line-height: 1.6;
+}
+
+.ql-content h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0.67em 0;
+}
+
+.ql-content h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0.83em 0;
+}
+
+.ql-content h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+    margin: 1em 0;
+}
+
+.ql-content h4 {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 1.33em 0;
+}
+
+.ql-content h5 {
+    font-size: 0.83em;
+    font-weight: bold;
+    margin: 1.67em 0;
+}
+
+.ql-content h6 {
+    font-size: 0.67em;
+    font-weight: bold;
+    margin: 2.33em 0;
+}
+
+.ql-content ul {
+    list-style-type: disc;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.ql-content ol {
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.ql-content li {
+    margin: 0.5em 0;
+}
+
+.ql-content a {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+.ql-content a:hover {
+    color: #2563eb;
+}
+
+.dark .ql-content a {
+    color: #60a5fa;
+}
+
+.dark .ql-content a:hover {
+    color: #93c5fd;
 }
 </style>
