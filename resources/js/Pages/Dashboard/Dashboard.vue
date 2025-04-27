@@ -169,7 +169,7 @@ const initializeCharts = () => {
 
                 <!-- Stats Cards -->
                 <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div v-for="stat in stats" :key="stat.name"
+                    <div v-if="stats && stats.length > 0" v-for="stat in stats" :key="stat.name"
                         class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800 flex flex-col h-[160px]">
                         <div class="p-5 flex-1">
                             <div class="flex items-start h-full">
@@ -246,8 +246,11 @@ const initializeCharts = () => {
                             <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                                 Ringkasan Penjualan (7 Hari Terakhir)
                             </h3>
-                            <div class="mt-4 h-64">
+                            <div v-if="salesChart && salesChart.length > 0" class="mt-4 h-64">
                                 <canvas id="salesChart"></canvas>
+                            </div>
+                            <div v-else class="mt-4 h-64 flex items-center justify-center">
+                                <p class="text-gray-500 dark:text-gray-400">Tidak ada data penjualan tersedia</p>
                             </div>
                         </div>
                     </div>
@@ -258,8 +261,11 @@ const initializeCharts = () => {
                             <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                                 Distribusi Status Pesanan
                             </h3>
-                            <div class="mt-4 h-64">
+                            <div v-if="orderStatus && Object.keys(orderStatus).length > 0" class="mt-4 h-64">
                                 <canvas id="orderStatusChart"></canvas>
+                            </div>
+                            <div v-else class="mt-4 h-64 flex items-center justify-center">
+                                <p class="text-gray-500 dark:text-gray-400">Tidak ada data status pesanan tersedia</p>
                             </div>
                         </div>
                     </div>
@@ -273,7 +279,7 @@ const initializeCharts = () => {
                             <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                                 Produk Terlaris Bulan Ini
                             </h3>
-                            <div class="mt-4">
+                            <div v-if="topProducts && topProducts.length > 0" class="mt-4">
                                 <div class="flow-root">
                                     <ul role="list" class="-my-5 divide-y divide-gray-200 dark:divide-gray-700">
                                         <li v-for="product in topProducts" :key="product.id" class="py-4">
@@ -295,6 +301,9 @@ const initializeCharts = () => {
                                     </ul>
                                 </div>
                             </div>
+                            <div v-else class="mt-4 py-4 text-center">
+                                <p class="text-gray-500 dark:text-gray-400">Tidak ada produk terlaris tersedia</p>
+                            </div>
                         </div>
                     </div>
 
@@ -304,7 +313,7 @@ const initializeCharts = () => {
                             <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
                                 Aktivitas Terbaru
                             </h3>
-                            <div class="mt-4">
+                            <div v-if="recentActivity && recentActivity.length > 0" class="mt-4">
                                 <div class="flow-root">
                                     <ul role="list" class="-mb-8">
                                         <li v-for="activity in recentActivity" :key="activity.id">
@@ -337,6 +346,9 @@ const initializeCharts = () => {
                                         </li>
                                     </ul>
                                 </div>
+                            </div>
+                            <div v-else class="mt-4 py-4 text-center">
+                                <p class="text-gray-500 dark:text-gray-400">Tidak ada aktivitas terbaru tersedia</p>
                             </div>
                         </div>
                     </div>

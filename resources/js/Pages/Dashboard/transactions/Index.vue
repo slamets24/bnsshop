@@ -270,7 +270,8 @@ const formatDate = (date) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody v-if="transactions && transactions.data && transactions.data.length > 0"
+                                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <tr v-for="(transaction, index) in transactions.data" :key="transaction.id">
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -343,12 +344,31 @@ const formatDate = (date) => {
                                         </td>
                                     </tr>
                                 </tbody>
+                                <tbody v-else class="bg-white dark:bg-gray-800">
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <svg class="w-12 h-12 mb-4 text-gray-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                                </svg>
+                                                <p class="text-lg font-medium">Tidak ada transaksi tersedia</p>
+                                                <p class="text-sm mt-1">Coba tambahkan transaksi baru atau ubah filter
+                                                    pencarian
+                                                    Anda</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
 
                         <!-- Pagination -->
                         <div class="mt-4">
-                            <nav class="flex items-center justify-between">
+                            <nav v-if="transactions && transactions.data && transactions.data.length > 0"
+                                class="flex items-center justify-between">
                                 <div class="flex-1 flex justify-between sm:hidden">
                                     <Link v-if="transactions.current_page > 1" :href="transactions.prev_page_url"
                                         class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">

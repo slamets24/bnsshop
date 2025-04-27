@@ -211,7 +211,8 @@ const toggleActive = async (product) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody v-if="products && products.data && products.data.length > 0"
+                                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <tr v-for="(product, index) in products.data" :key="product.id">
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -287,11 +288,30 @@ const toggleActive = async (product) => {
                                         </td>
                                     </tr>
                                 </tbody>
+                                <tbody v-else class="bg-white dark:bg-gray-800">
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <svg class="w-12 h-12 mb-4 text-gray-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                                </svg>
+                                                <p class="text-lg font-medium">Tidak ada produk tersedia</p>
+                                                <p class="text-sm mt-1">Coba tambahkan produk baru atau ubah filter
+                                                    pencarian
+                                                    Anda</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
 
                         <div class="mt-4">
-                            <nav class="flex items-center justify-between">
+                            <nav v-if="products && products.data && products.data.length > 0"
+                                class="flex items-center justify-between">
                                 <div class="flex-1 flex justify-between sm:hidden">
                                     <Link v-if="products.current_page > 1" :href="products.prev_page_url"
                                         class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">

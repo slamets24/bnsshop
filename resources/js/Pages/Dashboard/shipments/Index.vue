@@ -205,13 +205,6 @@ const formatDate = (date) => {
                                         :min="startDate || undefined" placeholder="Tanggal Akhir" />
                                 </div>
                             </div>
-
-                            <div class="flex md:items-start">
-                                <Link :href="route('dashboard.shipments.create')"
-                                    class="w-full md:w-auto px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 whitespace-nowrap text-center">
-                                Tambah Pengiriman
-                                </Link>
-                            </div>
                         </div>
 
                         <div class="overflow-x-auto">
@@ -252,7 +245,8 @@ const formatDate = (date) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody v-if="shipments && shipments.data && shipments.data.length > 0"
+                                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     <tr v-for="(shipment, index) in shipments.data" :key="shipment.id">
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -325,12 +319,30 @@ const formatDate = (date) => {
                                         </td>
                                     </tr>
                                 </tbody>
+                                <tbody v-else class="bg-white dark:bg-gray-800">
+                                    <tr>
+                                        <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                            <div class="flex flex-col items-center justify-center">
+                                                <svg class="w-12 h-12 mb-4 text-gray-400" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                </svg>
+                                                <p class="text-lg font-medium">Tidak ada pengiriman tersedia</p>
+                                                <p class="text-sm mt-1">Coba tambahkan pengiriman baru atau ubah filter
+                                                    pencarian Anda</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
 
                         <!-- Pagination -->
                         <div class="mt-4">
-                            <nav class="flex items-center justify-between">
+                            <nav v-if="shipments && shipments.data && shipments.data.length > 0"
+                                class="flex items-center justify-between">
                                 <div class="flex-1 flex justify-between sm:hidden">
                                     <Link v-if="shipments.current_page > 1" :href="shipments.prev_page_url"
                                         class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
