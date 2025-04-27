@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -18,22 +20,17 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard/Index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('transactions', TransactionController::class)->except(['show']);
+        Route::resource('shipments', ShipmentController::class)->except(['show']);
         Route::delete('/products/{product}/images/{image}', [ProductController::class, 'deleteImage'])->name('products.images.delete');
         Route::put('/products/{product}/links', [ProductController::class, 'updateLinks'])->name('products.links.update');
         Route::post('/products/{product}/images', [ProductController::class, 'uploadImages'])->name('products.images.upload');
         Route::post('/products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->name('products.toggle-active');
-
-        Route::get('/shipments', function () {
-            return Inertia::render('Dashboard/shipments/Index');
-        })->name('shipments');
     });
 });
 

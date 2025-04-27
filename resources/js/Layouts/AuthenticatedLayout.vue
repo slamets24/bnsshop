@@ -137,9 +137,9 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 <span v-if="!isSidebarCollapsed" class="ml-3">Kategori</span>
                 </Link>
 
-                <Link :href="route('dashboard.shipments')" :class="{
-                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.shipments'),
-                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.shipments')
+                <Link :href="route('dashboard.shipments.index')" :class="{
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.shipments.index'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.shipments.index')
                 }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

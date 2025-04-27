@@ -190,8 +190,8 @@ const formatDate = (date) => {
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center">
-                            <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="mb-6 flex flex-col md:flex-row gap-4">
+                            <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <!-- Search Input -->
                                 <div class="relative">
                                     <input type="text" v-model="search" placeholder="Cari transaksi..."
@@ -228,10 +228,12 @@ const formatDate = (date) => {
                                 </div>
                             </div>
 
-                            <Link :href="route('dashboard.transactions.create')"
-                                class="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 whitespace-nowrap">
-                            Tambah Transaksi Offline
-                            </Link>
+                            <div class="flex md:items-start">
+                                <Link :href="route('dashboard.transactions.create')"
+                                    class="w-full md:w-auto px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 whitespace-nowrap text-center">
+                                Tambah Transaksi Offline
+                                </Link>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto">
