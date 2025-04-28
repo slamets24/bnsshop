@@ -105,8 +105,8 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 </Link>
 
                 <Link :href="route('dashboard.products.index')" :class="{
-                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.products.index'),
-                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.products.index')
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.products.*'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.products.*')
                 }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -116,8 +116,8 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 </Link>
 
                 <Link :href="route('dashboard.transactions.index')" :class="{
-                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.transactions.index'),
-                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.transactions.index')
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.transactions.*'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.transactions.*')
                 }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -138,14 +138,25 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
                 </Link>
 
                 <Link :href="route('dashboard.shipments.index')" :class="{
-                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.shipments.index'),
-                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.shipments.index')
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.shipments.*'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.shipments.*')
                 }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
                 </svg>
                 <span v-if="!isSidebarCollapsed" class="ml-3">Pengiriman</span>
+                </Link>
+
+                <Link :href="route('dashboard.users.index')" :class="{
+                    'bg-gray-100 dark:bg-gray-700': route().current('dashboard.users.*'),
+                    'hover:bg-gray-50 dark:hover:bg-gray-700': !route().current('dashboard.users.*')
+                }" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span v-if="!isSidebarCollapsed" class="ml-3">Admin</span>
                 </Link>
             </nav>
 

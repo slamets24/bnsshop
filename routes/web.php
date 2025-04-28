@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('transactions', TransactionController::class)->except(['show']);
         Route::resource('shipments', ShipmentController::class)->except(['show']);
+        Route::resource('users', UserController::class)->except(['show']);
         Route::delete('/products/{product}/images/{image}', [ProductController::class, 'deleteImage'])->name('products.images.delete');
         Route::put('/products/{product}/links', [ProductController::class, 'updateLinks'])->name('products.links.update');
         Route::post('/products/{product}/images', [ProductController::class, 'uploadImages'])->name('products.images.upload');
