@@ -10,16 +10,16 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FrontendController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+// Frontend Routes
+Route::get('/', [FrontendController::class, 'welcome'])->name('welcome');
+Route::get('/products', [FrontendController::class, 'products'])->name('products');
+Route::get('/products/{product}', [FrontendController::class, 'productDetail'])->name('products.show');
+Route::get('/categories', [FrontendController::class, 'categories'])->name('categories');
+Route::get('/categories/{category}', [FrontendController::class, 'categoryProducts'])->name('categories.show');
 
+// Dashboard Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
