@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -7,6 +7,8 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 const isDark = ref(false);
 const showingNavigationDropdown = ref(false);
 const { auth } = usePage().props;
+
+const currentRoute = computed(() => route().current());
 
 onMounted(() => {
     // Check if user has dark mode preference
@@ -39,23 +41,29 @@ const toggleDarkMode = () => {
                     <!-- Logo -->
                     <div class="shrink-0 flex items-center">
                         <Link :href="route('welcome')">
-                        <img src="/img/logo.png" alt="BNS Hijab" class="h-12 w-auto" />
+                        <img src="/img/logonew.png" alt="BNS Hijab" class="h-12 w-auto" />
                         </Link>
                     </div>
 
                     <div class="flex items-center">
                         <!-- Navigation Links -->
                         <div class="hidden space-x-8 sm:flex">
-                            <Link :href="route('welcome')"
-                                class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-900 dark:text-gray-100">
+                            <Link :href="route('welcome')" :class="[
+                                'inline-flex items-center px-1 pt-1 text-sm font-medium leading-5',
+                                currentRoute === 'welcome' ? 'text-gray-900 dark:text-gray-100 border-b-2 border-emerald-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            ]">
                             Beranda
                             </Link>
-                            <Link :href="route('products')"
-                                class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <Link :href="route('products')" :class="[
+                                'inline-flex items-center px-1 pt-1 text-sm font-medium leading-5',
+                                currentRoute === 'products' ? 'text-gray-900 dark:text-gray-100 border-b-2 border-emerald-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            ]">
                             Produk
                             </Link>
-                            <Link :href="route('categories')"
-                                class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <Link :href="route('categories')" :class="[
+                                'inline-flex items-center px-1 pt-1 text-sm font-medium leading-5',
+                                currentRoute === 'categories' ? 'text-gray-900 dark:text-gray-100 border-b-2 border-emerald-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                            ]">
                             Kategori
                             </Link>
                         </div>
@@ -118,16 +126,22 @@ const toggleDarkMode = () => {
             <div :class="{ 'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown }"
                 class="sm:hidden">
                 <div class="pt-2 pb-3 space-y-1">
-                    <Link :href="route('welcome')"
-                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                    <Link :href="route('welcome')" :class="[
+                        'block w-full pl-3 pr-4 py-2 border-l-4 text-left text-base font-medium transition duration-150 ease-in-out',
+                        currentRoute === 'welcome' ? 'border-emerald-500 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ]">
                     Beranda
                     </Link>
-                    <Link :href="route('products')"
-                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                    <Link :href="route('products')" :class="[
+                        'block w-full pl-3 pr-4 py-2 border-l-4 text-left text-base font-medium transition duration-150 ease-in-out',
+                        currentRoute === 'products' ? 'border-emerald-500 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ]">
                     Produk
                     </Link>
-                    <Link :href="route('categories')"
-                        class="block w-full pl-3 pr-4 py-2 border-l-4 border-transparent text-left text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
+                    <Link :href="route('categories')" :class="[
+                        'block w-full pl-3 pr-4 py-2 border-l-4 text-left text-base font-medium transition duration-150 ease-in-out',
+                        currentRoute === 'categories' ? 'border-emerald-500 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700' : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ]">
                     Kategori
                     </Link>
                 </div>
@@ -183,7 +197,7 @@ const toggleDarkMode = () => {
                 <!-- sisi kiri -->
                 <div class="mx-auto text-center lg:w-1/2 md:mx-0">
                     <Link href="/" class="flex items-center justify-center font-medium text-gray-900 title-font">
-                    <img class="w-16 md:w-20" src="/img/logo2.jpg" alt="">
+                    <img class="w-16 md:w-20" src="/img/logonew.png" alt="">
                     </Link>
                     <p class="mt-2 text-sm text-white dark:text-gray-300">BNS Hijab Official Store</p>
                     <div class="mt-4">

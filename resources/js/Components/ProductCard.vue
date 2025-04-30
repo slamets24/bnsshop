@@ -23,12 +23,15 @@ const getWhatsAppLink = (product) => {
         <!-- Info Produk -->
         <div class="flex justify-between w-full mt-4">
             <div>
-                <Link :href="route('products.show', product.slug)">
+                <Link :href="route('products.show', {
+                    category: product.category.name,
+                    product: product.slug
+                })">
                 <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white">{{ product.name }}</h3>
                 </Link>
                 <p class="text-sm text-gray-600 dark:text-gray-300">Rp. {{ new
                     Intl.NumberFormat('id-ID').format(product.price)
-                }}</p>
+                    }}</p>
             </div>
             <!-- Tombol WA -->
             <a :href="getWhatsAppLink(product)" target="_blank" class="text-green-500 mt-3">

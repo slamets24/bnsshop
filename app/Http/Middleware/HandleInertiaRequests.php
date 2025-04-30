@@ -36,6 +36,20 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'ziggy' => [
+                'location' => $request->url(),
+                'query' => $request->query(),
+                'only' => [
+                    'welcome',
+                    'products',
+                    'products.show',
+                    'categories',
+                    'categories.show',
+                    'checkout',
+                    'order.store',
+                    'order.success'
+                ],
+            ],
         ]);
     }
 }

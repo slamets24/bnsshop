@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Application;
 
 class FrontendController extends Controller
@@ -42,13 +43,6 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function productDetail(Product $product)
-    {
-        return Inertia::render('Frontend/ProductDetail', [
-            'product' => $product->load('category')
-        ]);
-    }
-
     public function categories()
     {
         $categories = Category::withCount('products')->get();
@@ -62,11 +56,38 @@ class FrontendController extends Controller
     {
         $products = $category->products()
             ->where('is_active', true)
+            ->with('category')
             ->paginate(12);
 
         return Inertia::render('Frontend/CategoryProducts', [
             'category' => $category,
             'products' => $products
+        ]);
+    }
+
+    public function productDetail(Category $category, Product $product)
+    {
+        // Debug
+        info('Category:', ['category' => $category->toArray()]);
+        info('Product:', ['product' => $product->toArray()]);
+
+        if ($product->category_id !== $category->id) {
+            abort(404);
+        }
+
+        // Get related products from same category, exclude current product
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->with('category')
+            ->take(4)
+            ->get();
+
+        // Load category relationship
+        $product->load(['category', 'images']);
+
+        return Inertia::render('Frontend/ProductDetail', [
+            'product' => $product,
+            'relatedProducts' => $relatedProducts
         ]);
     }
 }

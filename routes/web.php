@@ -11,13 +11,19 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\Frontend\OrderController;
 
 // Frontend Routes
 Route::get('/', [FrontendController::class, 'welcome'])->name('welcome');
 Route::get('/products', [FrontendController::class, 'products'])->name('products');
-Route::get('/products/{product}', [FrontendController::class, 'productDetail'])->name('products.show');
+Route::get('/products/{category:name}/{product:slug}', [FrontendController::class, 'productDetail'])->name('products.show');
 Route::get('/categories', [FrontendController::class, 'categories'])->name('categories');
-Route::get('/categories/{category}', [FrontendController::class, 'categoryProducts'])->name('categories.show');
+Route::get('/categories/{category:name}', [FrontendController::class, 'categoryProducts'])->name('categories.show');
+
+// Order Routes
+Route::get('/checkout/{product}', [OrderController::class, 'checkout'])->name('checkout');
+Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+Route::get('/order/success/{trackingToken}', [OrderController::class, 'success'])->name('order.success');
 
 // Dashboard Routes
 Route::middleware(['auth', 'verified'])->group(function () {

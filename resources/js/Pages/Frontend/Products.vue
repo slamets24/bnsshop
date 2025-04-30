@@ -14,7 +14,7 @@ defineProps({
 
 <template>
 
-    <Head title="Produk - KatonShop" />
+    <Head title="BNS | Produk" />
 
     <FrontendLayout>
         <div class="bg-white dark:bg-gray-800">

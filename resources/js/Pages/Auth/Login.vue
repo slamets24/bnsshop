@@ -36,7 +36,7 @@ const submit = () => {
 
         <div class="flex flex-col items-center mb-8">
             <Link :href="route('welcome')">
-            <img src="/img/logo.png" alt="BNS Hijab" class="h-20 w-auto mb-2" />
+            <img src="/img/logonew.png" alt="BNS Hijab" class="h-20 w-auto mb-2" />
             </Link>
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">
                 BNS Hijab

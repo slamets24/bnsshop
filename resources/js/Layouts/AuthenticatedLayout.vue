@@ -69,7 +69,7 @@ if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.match
             <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                 <div class="shrink-0 flex items-center">
                     <Link :href="route('dashboard')" class="flex items-center">
-                    <img src="/img/logo.png" alt="BNS Hijab" class="block h-10 w-auto" />
+                    <img src="/img/logonew.png" alt="BNS Hijab" class="block h-10 w-auto" />
                     <span v-if="!isSidebarCollapsed"
                         class="ml-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
                         BNS Hijab

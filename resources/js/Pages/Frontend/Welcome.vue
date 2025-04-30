@@ -1,8 +1,9 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import FrontendLayout from '@/Layouts/FrontendLayout.vue';
 import ProductCard from '@/Components/ProductCard.vue';
 import Hero from '@/Components/Hero.vue';
+import Pagination from '@/Components/Pagination.vue';
 
 defineProps({
     canLogin: Boolean,
@@ -26,10 +27,13 @@ defineProps({
         <!-- Produk Terpopuler -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-gray-100 dark:bg-gray-800">
             <div class="container mx-auto px-4 md:px-6">
-                <h2 class="text-3xl font-bold tracking-tight text-center mb-8 dark:text-white">Produk Terpopuler
-                </h2>
-                <div class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                <h2 class="text-3xl font-bold tracking-tight text-center mb-8 dark:text-white">Produk Terpopuler</h2>
+                <div v-if="favoritProducts && favoritProducts.length > 0"
+                    class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                     <ProductCard v-for="product in favoritProducts" :key="product.id" :product="product" />
+                </div>
+                <div v-else class="text-center text-gray-600 dark:text-gray-400">
+                    Produk Tidak Ada
                 </div>
                 <div class="mt-8 text-center">
                     <Link href="/products"
@@ -204,11 +208,15 @@ defineProps({
                 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-center mb-6 sm:mb-8 dark:text-white">Semua
                     Produk</h2>
 
-                <div class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <div v-if="products.data && products.data.length > 0"
+                    class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     <ProductCard v-for="product in products.data" :key="product.id" :product="product" />
                 </div>
+                <div v-else class="text-center text-gray-600 dark:text-gray-400">
+                    Produk Tidak Ada
+                </div>
 
-                <div class="mt-6">
+                <div v-if="products.links" class="mt-6">
                     <Pagination :links="products.links" />
                 </div>
             </div>

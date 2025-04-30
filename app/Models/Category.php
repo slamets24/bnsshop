@@ -15,6 +15,14 @@ class Category extends Model
         'code_sku',
     ];
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'name';
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);
