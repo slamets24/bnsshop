@@ -319,7 +319,8 @@ const formatDate = (date) => {
                                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                     </svg>
                                                 </button>
-                                                <Link :href="route('dashboard.transactions.edit', transaction.id)"
+                                                <Link
+                                                    :href="route('dashboard.transactions.edit', transaction.transaction_code)"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                     title="Edit Transaksi">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"

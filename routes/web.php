@@ -32,7 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show']);
-        Route::resource('transactions', TransactionController::class)->except(['show']);
+        Route::resource('transactions', TransactionController::class)
+            ->except(['show'])
+            ->parameters(['transactions' => 'transaction:transaction_code']);
         Route::resource('shipments', ShipmentController::class)->except(['show']);
         Route::resource('users', UserController::class)->except(['show']);
         Route::delete('/products/{product}/images/{image}', [ProductController::class, 'deleteImage'])->name('products.images.delete');

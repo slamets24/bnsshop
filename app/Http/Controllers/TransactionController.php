@@ -108,17 +108,21 @@ class TransactionController extends Controller
         }
     }
 
-    public function edit(Transaction $transaction)
+    public function edit($transaction_code)
     {
+        $transaction = Transaction::where('transaction_code', $transaction_code)->firstOrFail();
+
         return Inertia::render('Dashboard/transactions/Edit', [
             'transaction' => $transaction->load(['items.product', 'creator']),
             'products' => Product::select('id', 'name', 'price', 'stock')->where('is_active', true)->get()
         ]);
     }
 
-    public function update(Request $request, Transaction $transaction)
+    public function update(Request $request, $transaction_code)
     {
         try {
+            $transaction = Transaction::where('transaction_code', $transaction_code)->firstOrFail();
+
             $request->validate([
                 'status' => 'required|in:pending,paid,processing,shipped,delivered,completed,cancelled,failed',
                 'note' => 'nullable|string',
@@ -149,9 +153,11 @@ class TransactionController extends Controller
         }
     }
 
-    public function destroy(Transaction $transaction)
+    public function destroy($transaction_code)
     {
         try {
+            $transaction = Transaction::where('transaction_code', $transaction_code)->firstOrFail();
+
             if (!in_array($transaction->status, ['cancelled', 'failed'])) {
                 throw new \Exception('Hanya transaksi yang dibatalkan atau gagal yang dapat dihapus');
             }

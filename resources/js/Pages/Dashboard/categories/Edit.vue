@@ -15,7 +15,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('dashboard.categories.update', props.category.id));
+    form.put(route('dashboard.categories.update', props.category));
 };
 </script>
 

@@ -33,14 +33,19 @@ const statusOptions = [
     { value: 'failed', label: 'Gagal' }
 ];
 
-const submit = () => {
+const updateTransaction = () => {
     if (form.status === 'cancelled' && props.transaction.status !== 'cancelled') {
         if (!confirm('Mengubah status menjadi dibatalkan akan mengembalikan stok produk. Lanjutkan?')) {
             return;
         }
     }
 
-    form.put(route('dashboard.transactions.update', props.transaction.id));
+    form.put(route('dashboard.transactions.update', props.transaction.transaction_code), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Handle success
+        }
+    });
 };
 
 const formatPrice = (price) => {
@@ -120,7 +125,7 @@ const formatDate = (date) => {
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <form @submit.prevent="submit" class="max-w-6xl">
+                        <form @submit.prevent="updateTransaction" class="max-w-6xl">
                             <!-- Transaction Info -->
                             <div class="space-y-8">
                                 <div>

@@ -28,7 +28,7 @@ const deleteCategory = (category) => {
 };
 
 const confirmDelete = () => {
-    router.delete(route('dashboard.categories.destroy', categoryToDelete.value.id), {
+    router.delete(route('dashboard.categories.destroy', categoryToDelete.value), {
         onSuccess: () => {
             showNotification('success', 'Kategori berhasil dihapus');
         },
@@ -165,7 +165,7 @@ watch(search, debounce((value) => {
                                             {{ new Date(category.created_at).toLocaleDateString('id-ID') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <Link :href="route('dashboard.categories.edit', category.id)"
+                                            <Link :href="route('dashboard.categories.edit', category)"
                                                 class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4">
                                             Edit
                                             </Link>
