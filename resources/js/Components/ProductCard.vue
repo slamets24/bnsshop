@@ -9,7 +9,8 @@ defineProps({
 });
 
 const getWhatsAppLink = (product) => {
-    return `https://wa.me/6282240338227?text=Halo,%20saya%20tertarik%20untuk%20memesan%20${encodeURIComponent(product.name)}.%20Bisakah%20anda%20memberikan%20informasi%20lebih%20lanjut?`;
+    const productName = product?.name || 'Produk';
+    return `https://wa.me/6282240338227?text=Halo,%20saya%20tertarik%20untuk%20memesan%20${encodeURIComponent(productName)}.%20Bisakah%20anda%20memberikan%20informasi%20lebih%20lanjut?`;
 };
 </script>
 
@@ -17,20 +18,21 @@ const getWhatsAppLink = (product) => {
     <div class="flex flex-col items-start bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md h-full">
         <!-- Gambar Produk -->
         <div class="w-full h-48 overflow-hidden rounded-lg">
-            <img :src="product.images && product.images.length > 0 ? `/storage/${product.images[0].name}` : `https://picsum.photos/300/300?random=${product.id}`"
-                :alt="product.name" class="object-cover w-full h-full" />
+            <img :src="product?.images?.length > 0 ? `/storage/${product.images[0].name}` : `https://picsum.photos/300/300?random=${product?.id || 0}`"
+                :alt="product?.name || 'Produk'" class="object-cover w-full h-full" />
         </div>
         <!-- Info Produk -->
         <div class="flex justify-between w-full mt-4">
             <div>
                 <Link :href="route('products.show', {
-                    category: product.category.name,
-                    product: product.slug
+                    category: product?.category?.name || '',
+                    product: product?.slug || ''
                 })">
-                <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white">{{ product.name }}</h3>
+                <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white">{{ product?.name || 'Produk' }}
+                </h3>
                 </Link>
                 <p class="text-sm text-gray-600 dark:text-gray-300">Rp. {{ new
-                    Intl.NumberFormat('id-ID').format(product.price)
+                    Intl.NumberFormat('id-ID').format(product?.price || 0)
                     }}</p>
             </div>
             <!-- Tombol WA -->
