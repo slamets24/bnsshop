@@ -135,7 +135,11 @@ class DashboardController extends Controller
                 $type = $transaction->shippingAddress ? 'online' : 'offline';
                 return [
                     'id' => $transaction->id,
-                    'user' => $transaction->creator->name,
+                    'user' => $transaction->shippingAddress
+                        ? $transaction->shippingAddress->recipient_name . ' (Online)'
+                        : ($transaction->creator
+                            ? $transaction->creator->name . ' (Offline)'
+                            : 'System'),
                     'action' => 'membuat transaksi ' . $transaction->transaction_code . ' (' . $type . ')',
                     'time' => $transaction->created_at->diffForHumans(),
                     'type' => 'transaction'
@@ -151,7 +155,7 @@ class DashboardController extends Controller
             ->map(function ($shipment) {
                 return [
                     'id' => $shipment->id,
-                    'user' => $shipment->creator->name,
+                    'user' => $shipment->creator ? $shipment->creator->name : 'System',
                     'action' => 'membuat pengiriman ' . $shipment->tracking_number,
                     'time' => $shipment->created_at->diffForHumans(),
                     'type' => 'shipment'

@@ -15,7 +15,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaction::with(['items.product', 'creator'])
+        $query = Transaction::with(['items.product', 'creator', 'shippingAddress'])
             ->when($request->filled('search'), function ($q) use ($request) {
                 $q->where('transaction_code', 'like', '%' . $request->search . '%');
             })

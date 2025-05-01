@@ -541,7 +541,10 @@ const formatDate = (date) => {
                                 <div>
                                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Dibuat Oleh</p>
                                     <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ selectedTransaction.creator?.name || '-' }}
+                                        {{ selectedTransaction.creator?.name ||
+                                            (selectedTransaction.order_type === 'online' ?
+                                                (selectedTransaction.shipping_address?.recipient_name + ' (Customer)') :
+                                                '-') }}
                                     </p>
                                 </div>
                                 <div>

@@ -24,13 +24,6 @@
                     </div>
                 </div>
                 <div class="flex flex-col justify-start space-y-8 lg:justify-center lg:items-start">
-                    <!-- Badge -->
-                    <div
-                        class="inline-flex items-center rounded-lg bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 text-sm font-medium text-emerald-700 dark:text-emerald-300 mb-2">
-                        <span class="flex h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
-                        New Collection 2024
-                    </div>
-
                     <div class="space-y-4">
                         <h1 class="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none dark:text-white">
                             Tampil Anggun dan <span class="text-emerald-600 dark:text-emerald-400">Syar'i</span>
@@ -96,4 +89,8 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
+
+const submit = () => {
+    form.post(route('order.store'));
+};
 </script>
