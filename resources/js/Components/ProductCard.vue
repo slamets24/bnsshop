@@ -15,30 +15,36 @@ const getWhatsAppLink = (product) => {
 </script>
 
 <template>
-    <div class="flex flex-col items-start bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md h-full">
+    <div class="flex flex-col bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md h-full">
         <!-- Gambar Produk -->
         <div class="w-full h-48 overflow-hidden rounded-lg">
             <img :src="product?.images?.length > 0 ? `/storage/${product.images[0].name}` : `https://picsum.photos/300/300?random=${product?.id || 0}`"
                 :alt="product?.name || 'Produk'" class="object-cover w-full h-full" />
         </div>
+
         <!-- Info Produk -->
-        <div class="flex justify-between w-full mt-4">
-            <div>
+        <div class="flex justify-between items-start mt-4">
+            <div class="flex-1 min-w-0">
                 <Link :href="route('products.show', {
                     category: product?.category?.name || '',
                     product: product?.slug || ''
-                })">
-                <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white truncate">{{ product?.name ||
-                    'Produk' }}
+                })" class="block">
+                <h3
+                    class="text-sm sm:text-base font-medium text-gray-900 dark:text-white whitespace-nowrap overflow-hidden truncate">
+                    {{ product?.name || 'Produk' }}
                 </h3>
                 </Link>
-                <p class="text-sm text-gray-600 dark:text-gray-300">Rp. {{ new
-                    Intl.NumberFormat('id-ID').format(product?.price || 0)
-                }}</p>
+                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                    Rp. {{ new Intl.NumberFormat('id-ID').format(product?.price || 0) }}
+                </p>
             </div>
+
             <!-- Tombol WA -->
-            <a :href="getWhatsAppLink(product)" target="_blank" class="text-green-500 mt-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <a :href="getWhatsAppLink(product)" target="_blank"
+                class="text-green-500 hover:text-green-600 transition-colors ml-2 flex-shrink-0"
+                aria-label="Hubungi via WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor"
+                    viewBox="0 0 24 24">
                     <path
                         d="M12 2C6.48 2 2 6.48 2 12c0 1.64.39 3.19 1.1 4.57L2 22l5.43-1.1C8.81 21.61 10.36 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-.05 18c-1.2 0-2.4-.3-3.47-.87l-.25-.14-3.09.62.64-3.03-.16-.28c-.59-1.01-.88-2.17-.88-3.3 0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z">
                     </path>

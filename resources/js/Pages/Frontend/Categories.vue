@@ -40,6 +40,8 @@ defineProps({
                         </ol>
                     </nav>
 
+                    <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Semua Kategori</h2>
+
                     <div class="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
                         <div v-for="category in categories" :key="category.id" class="group relative">
                             <div
@@ -54,7 +56,7 @@ defineProps({
                                 </Link>
                             </h3>
                             <p class="text-base font-semibold text-gray-900 dark:text-white">{{ category.products_count
-                                }}
+                            }}
                                 Produk</p>
                         </div>
                     </div>
