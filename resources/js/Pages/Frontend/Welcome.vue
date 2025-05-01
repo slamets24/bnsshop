@@ -26,7 +26,7 @@ defineProps({
 
         <!-- Produk Terpopuler -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-gray-100 dark:bg-gray-800">
-            <div class="container mx-auto px-4 md:px-6">
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 <h2 class="text-3xl font-bold tracking-tight text-center mb-8 dark:text-white">Produk Terpopuler</h2>
                 <div v-if="favoritProducts && favoritProducts.length > 0"
                     class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -46,9 +46,8 @@ defineProps({
 
         <!-- Keunggulan Kami -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-green-700 dark:bg-gray-900">
-            <div class="container mx-auto px-4 md:px-6">
-                <h2 class="text-3xl font-bold tracking-tight text-center mb-12 dark:text-white">Kenapa Harus BNS Hijab?
-                </h2>
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center mb-12 text-white">Kenapa Harus BNS Hijab?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-600 mb-4" fill="none"
@@ -88,7 +87,7 @@ defineProps({
 
         <!-- Tentang Kami -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-gray-100 dark:bg-gray-800">
-            <div class="container mx-auto px-4 md:px-6">
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 <h2 class="text-3xl font-bold tracking-tight sm:text-4xl xl:text-5xl mb-6 dark:text-white">Tentang Kami
                 </h2>
                 <div class="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-8 mb-12">
@@ -118,7 +117,7 @@ defineProps({
 
         <!-- Testimoni Pelanggan -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-white dark:bg-gray-900">
-            <div class="container mx-auto px-4 md:px-6">
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 <h2 class="text-3xl font-bold tracking-tight text-center mb-12 dark:text-white">Apa Kata Mereka?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
@@ -177,7 +176,7 @@ defineProps({
 
         <!-- CTA/Kontak -->
         <section class="w-full py-10 sm:py-12 lg:py-14 bg-emerald-600 dark:bg-emerald-700">
-            <div class="container mx-auto px-4 md:px-6 text-center">
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
                 <h2 class="text-3xl font-bold tracking-tight text-white mb-4">Butuh Bantuan?</h2>
                 <p class="text-lg text-white/90 mb-8">Hubungi kami melalui WhatsApp atau Instagram untuk konsultasi dan
                     pemesanan</p>
@@ -204,12 +203,12 @@ defineProps({
 
         <!-- Semua Produk -->
         <section class="w-full py-8 sm:py-10 lg:py-12 bg-gray-100 dark:bg-gray-800">
-            <div class="container mx-auto px-4 md:px-6">
+            <div class="container px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-center mb-6 sm:mb-8 dark:text-white">Semua
                     Produk</h2>
 
                 <div v-if="products.data && products.data.length > 0"
-                    class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    class="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                     <ProductCard v-for="product in products.data" :key="product.id" :product="product" />
                 </div>
                 <div v-else class="text-center text-gray-600 dark:text-gray-400">

@@ -28,12 +28,13 @@ const getWhatsAppLink = (product) => {
                     category: product?.category?.name || '',
                     product: product?.slug || ''
                 })">
-                <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white">{{ product?.name || 'Produk' }}
+                <h3 class="text-sm sm:text-lg font-medium text-gray-900 dark:text-white truncate">{{ product?.name ||
+                    'Produk' }}
                 </h3>
                 </Link>
                 <p class="text-sm text-gray-600 dark:text-gray-300">Rp. {{ new
                     Intl.NumberFormat('id-ID').format(product?.price || 0)
-                    }}</p>
+                }}</p>
             </div>
             <!-- Tombol WA -->
             <a :href="getWhatsAppLink(product)" target="_blank" class="text-green-500 mt-3">
