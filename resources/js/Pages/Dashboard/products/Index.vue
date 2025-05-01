@@ -38,7 +38,7 @@ const viewProduct = (product) => {
 };
 
 const confirmDelete = () => {
-    router.delete(route('dashboard.products.destroy', productToDelete.value.id), {
+    router.delete(route('dashboard.products.destroy', productToDelete.value), {
         onSuccess: () => {
             showNotification('success', 'Produk berhasil dihapus');
         },
@@ -58,7 +58,6 @@ const showNotification = (type, message) => {
     };
 };
 
-// Show success notification if there's a message prop
 if (props.message) {
     showNotification('success', props.message);
 }
@@ -79,7 +78,6 @@ watch(search, debounce((value) => {
     );
 }, 300));
 
-// Add price formatter function in script setup
 const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
         style: 'currency',
@@ -91,29 +89,12 @@ const formatPrice = (price) => {
 
 const toggleActive = async (product) => {
     try {
-        const response = await axios.post(route('dashboard.products.toggle-active', product.id));
-
-        if (response.data.success) {
-            product.is_active = !product.is_active;
-            notification.value = {
-                show: true,
-                type: 'success',
-                message: response.data.message
-            };
-        } else {
-            notification.value = {
-                show: true,
-                type: 'error',
-                message: response.data.message
-            };
-        }
+        const response = await axios.post(route('dashboard.products.toggle-active', product));
+        product.is_active = !product.is_active;
+        showNotification(response.data.success ? 'success' : 'error', response.data.message);
     } catch (error) {
         console.error('Error toggling product status:', error);
-        notification.value = {
-            show: true,
-            type: 'error',
-            message: error.response?.data?.message || 'Terjadi kesalahan saat mengubah status produk'
-        };
+        showNotification('error', error.response?.data?.message || 'Terjadi kesalahan saat mengubah status produk');
     }
 };
 </script>
@@ -264,7 +245,7 @@ const toggleActive = async (product) => {
                                                             :d="product.is_active ? 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'" />
                                                     </svg>
                                                 </button>
-                                                <Link :href="route('dashboard.products.edit', product.id)"
+                                                <Link :href="route('dashboard.products.edit', product)"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                     title="Edit Produk">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"

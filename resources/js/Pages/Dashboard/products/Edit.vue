@@ -13,7 +13,6 @@ const props = defineProps({
     flash: Object
 });
 
-// Form untuk data produk utama
 const productForm = useForm({
     name: props.product.name,
     description: props.product.description,
@@ -22,25 +21,22 @@ const productForm = useForm({
     category_id: props.product.category_id,
 });
 
-// Form untuk link marketplace
 const linksForm = useForm({
     shopee_url: props.product.links?.shopee_url || '',
     tokopedia_url: props.product.links?.tokopedia_url || '',
     whatsapp_number: props.product.links?.whatsapp_number || ''
 });
 
-// Form untuk gambar
 const imagesForm = useForm({
     images: [],
 });
 
-// State untuk UI
 const imagePreview = ref([]);
 const skuPreview = ref(props.product.sku);
 const originalCategoryId = props.product.category_id;
 const showDeleteModal = ref(false);
 const imageToDelete = ref(null);
-const activeTab = ref('product'); // 'product', 'links', atau 'images'
+const activeTab = ref('product');
 
 const notification = ref({
     show: false,
@@ -48,16 +44,13 @@ const notification = ref({
     type: 'success',
 });
 
-// Watch for category changes to update SKU preview
 watch(() => productForm.category_id, (newCategoryId) => {
     if (newCategoryId === originalCategoryId) {
-        // If category hasn't changed, show original SKU
         skuPreview.value = props.product.sku;
     } else if (newCategoryId) {
         const category = props.categories.find(c => c.id === parseInt(newCategoryId));
         if (category) {
-            const productCount = 1;
-            skuPreview.value = `${category.code_sku}-${String(productCount).padStart(3, '0')}*`;
+            skuPreview.value = `${category.code_sku}-${String(1).padStart(3, '0')}*`;
         }
     } else {
         skuPreview.value = '';
@@ -77,6 +70,14 @@ watch(
     }
 );
 
+const showNotification = (type, message) => {
+    notification.value = {
+        show: true,
+        type,
+        message
+    };
+};
+
 const handleImagesUpload = (e) => {
     const files = e.target.files;
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -86,20 +87,15 @@ const handleImagesUpload = (e) => {
         const isValidType = allowedTypes.includes(file.type);
         const isValidSize = file.size <= maxSize;
 
-        if (!isValidType) {
-            console.error(`File ${file.name} is not a valid image type. Allowed types: JPEG, JPG, PNG`);
-        }
-        if (!isValidSize) {
-            console.error(`File ${file.name} is too large. Maximum size is 2MB`);
+        if (!isValidType || !isValidSize) {
+            console.error(`File ${file.name} validation failed: ${!isValidType ? 'Invalid type' : 'Size too large'}`);
         }
 
         return isValidType && isValidSize;
     });
 
-    // Add valid files to form
     imagesForm.images = [...imagesForm.images, ...validFiles];
 
-    // Create previews for valid files
     validFiles.forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -111,9 +107,7 @@ const handleImagesUpload = (e) => {
 
 const removeImage = (index) => {
     imagePreview.value.splice(index, 1);
-    const newImages = [...imagesForm.images];
-    newImages.splice(index, 1);
-    imagesForm.images = newImages;
+    imagesForm.images.splice(index, 1);
 };
 
 const deleteExistingImage = (imageId) => {
@@ -125,14 +119,13 @@ const confirmDelete = () => {
     if (!imageToDelete.value) return;
 
     router.delete(route('dashboard.products.images.delete', {
-        product: props.product.id,
+        product: props.product,
         image: imageToDelete.value
     }), {
         preserveScroll: true,
         onSuccess: () => {
             showDeleteModal.value = false;
             imageToDelete.value = null;
-            // Refresh halaman untuk mendapatkan data terbaru
             router.reload({ only: ['product', 'flash'] });
         },
         onError: () => {
@@ -147,54 +140,38 @@ const cancelDelete = () => {
     imageToDelete.value = null;
 };
 
-// Validasi jumlah gambar
 const validateImageCount = () => {
     const totalImages = (props.product.images?.length || 0) + imagePreview.value.length;
     if (totalImages < 1) {
-        notification.value = {
-            show: true,
-            message: 'Produk harus memiliki minimal 1 gambar.',
-            type: 'error'
-        };
+        showNotification('error', 'Produk harus memiliki minimal 1 gambar.');
         return false;
     }
     return true;
 };
 
 const updateProduct = () => {
-    productForm.put(route('dashboard.products.update', props.product.id), {
+    productForm.put(route('dashboard.products.update', props.product), {
         preserveScroll: true,
         onSuccess: () => {
-            productForm.reset();
-            notification.value = {
-                show: true,
-                message: 'Data produk berhasil diperbarui',
-                type: 'success'
-            };
+            showNotification('success', 'Data produk berhasil diperbarui');
         }
     });
 };
 
 const updateLinks = () => {
-    linksForm.put(route('dashboard.products.links.update', props.product.id), {
+    linksForm.put(route('dashboard.products.links.update', props.product), {
         preserveScroll: true,
         onSuccess: () => {
-            notification.value = {
-                show: true,
-                message: 'Link marketplace berhasil diperbarui',
-                type: 'success'
-            };
+            showNotification('success', 'Link marketplace berhasil diperbarui');
             router.reload({ only: ['product'] });
         }
     });
 };
 
 const uploadImages = () => {
-    if (!validateImageCount()) {
-        return;
-    }
+    if (!validateImageCount()) return;
 
-    imagesForm.post(route('dashboard.products.images.upload', props.product.id), {
+    imagesForm.post(route('dashboard.products.images.upload', props.product), {
         preserveScroll: true,
         onSuccess: () => {
             imagesForm.reset();
