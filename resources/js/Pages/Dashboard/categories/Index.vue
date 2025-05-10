@@ -213,7 +213,7 @@ watch(search, debounce((value) => {
             @close="showDeleteModal = false" @confirm="confirmDelete" />
 
         <!-- Notification -->
-        <SlideNotification :show="notification.show" :type="notification.type" :message="notification.message"
-            @close="notification.show = false" />
+        <SlideNotification :show="notification?.show || false" :type="notification?.type || 'success'"
+            :message="notification?.message || ''" @close="notification.show = false" />
     </AuthenticatedLayout>
 </template>

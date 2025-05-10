@@ -290,7 +290,7 @@ const formatDate = (date) => {
             :message="'Apakah Anda yakin ingin menghapus admin ' + (userToDelete?.name || '') + '?'"
             @close="showDeleteModal = false" @confirm="confirmDelete" />
 
-        <SlideNotification :show="notification.show" :type="notification.type" :message="notification.message"
-            @close="notification.show = false" />
+        <SlideNotification :show="notification?.show || false" :type="notification?.type || 'success'"
+            :message="notification?.message || ''" @close="notification.show = false" />
     </AuthenticatedLayout>
 </template>

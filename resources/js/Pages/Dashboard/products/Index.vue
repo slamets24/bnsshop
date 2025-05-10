@@ -209,7 +209,7 @@ const toggleActive = async (product) => {
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {{ product.category.name }}
+                                            {{ product.category?.name || 'Tidak ada kategori' }}
                                         </td>
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -412,7 +412,7 @@ const toggleActive = async (product) => {
                                 </h3>
                                 <div
                                     class="inline-flex items-center px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-                                    {{ selectedProduct.category.name }}
+                                    {{ selectedProduct.category?.name || 'Tidak ada kategori' }}
                                 </div>
                             </div>
                         </div>

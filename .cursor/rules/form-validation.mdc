@@ -1,0 +1,62 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Form Validation Rules
+
+## Error Display Guidelines
+
+1. **Field-Level Validation**
+   - Setiap input field harus menampilkan error validasi tepat di bawahnya
+   - Gunakan komponen `InputError` untuk menampilkan pesan error
+   - Format: `<InputError class="mt-2" :message="form.errors.[field_name]" />`
+
+2. **Form-Level Validation**
+   - Untuk error yang bersifat umum, gunakan `SlideNotification` dengan tipe 'error'
+   - Jangan menampilkan detail teknis kepada pengguna, buat pesan yang mudah dipahami
+
+3. **Tipe Data Input**
+   - Input numerik harus menggunakan `type="text"` (bukan `type="number"`) untuk mencegah konflik dengan prop binding
+   - Validasi numerik sebaiknya dilakukan di controller Laravel
+   - Format numerik (currency, percentage, etc) harus disesuaikan di level UI
+
+## Error Handling Pattern
+
+```vue
+// Contoh penanganan error yang tepat
+form.post(route('route.name'), {
+    onSuccess: () => {
+        // Handle success
+        showNotification('success', 'Operasi berhasil dilakukan');
+    },
+    onError: (errors) => {
+        // Error akan otomatis tampil di masing-masing field
+        // Untuk feedback umum:
+        if (Object.keys(errors).length > 0) {
+            showNotification('error', 'Mohon perbaiki kesalahan input');
+        }
+    }
+});
+```
+
+## Form Component Implementation
+
+Semua form di aplikasi ini harus:
+1. Menunjukkan field yang wajib diisi dengan tanda asterisk merah (`<span class="text-red-500">*</span>`)
+2. Memiliki validasi visual (border merah pada field yang error)
+3. Menampilkan pesan error yang jelas dan spesifik
+4. Memiliki handling untuk input yang tidak valid
+
+## Controller Validation
+
+Pastikan semua controller memiliki validasi yang sesuai untuk:
+
+1. Tipe data (string, numeric, date, etc.)
+2. Format (email, URL, etc.)
+3. Batasan nilai (min, max, between, etc.)
+4. Field yang required
+
+## Error Message Translation
+
+Pesan error sebaiknya dalam Bahasa Indonesia dan mudah dipahami pengguna.

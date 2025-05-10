@@ -533,7 +533,7 @@ const quillOptions = {
             :message="'Apakah Anda yakin ingin menghapus gambar ini? Tindakan ini tidak dapat dibatalkan.'">
         </ConfirmationModal>
 
-        <SlideNotification v-if="notification.show" :message="notification.message" :type="notification.type"
-            @close="notification.show = false" />
+        <SlideNotification :show="notification?.show || false" :type="notification?.type || 'success'"
+            :message="notification?.message || ''" @close="notification.show = false" />
     </AuthenticatedLayout>
 </template>

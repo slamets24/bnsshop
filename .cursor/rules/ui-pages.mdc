@@ -1,0 +1,41 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Halaman UI dan Antarmuka Pengguna
+
+Aplikasi KatonShop memiliki dua bagian utama untuk UI: Frontend (publik) dan Dashboard (admin).
+
+## Halaman Frontend
+
+Halaman publik yang diakses oleh pengunjung dan pembeli:
+
+- [Welcome](mdc:resources/js/Pages/Frontend/Welcome.vue) - Halaman beranda dengan produk unggulan
+- [Products](mdc:resources/js/Pages/Frontend/Products.vue) - Daftar semua produk
+- [ProductDetail](mdc:resources/js/Pages/Frontend/ProductDetail.vue) - Detail produk dan opsi pembelian
+- [Categories](mdc:resources/js/Pages/Frontend/Categories.vue) - Daftar kategori produk
+- [CategoryProducts](mdc:resources/js/Pages/Frontend/CategoryProducts.vue) - Produk dalam kategori tertentu
+- [Checkout](mdc:resources/js/Pages/Frontend/Checkout.vue) - Halaman checkout untuk pembelian
+- [OrderSuccess](mdc:resources/js/Pages/Frontend/OrderSuccess.vue) - Konfirmasi pesanan berhasil
+
+## Halaman Dashboard
+
+Halaman admin untuk mengelola toko:
+
+- [Dashboard](mdc:resources/js/Pages/Dashboard/Dashboard.vue) - Overview dan statistik
+- [Products Management](mdc:resources/js/Pages/Dashboard/products) - Mengelola produk
+- [Categories Management](mdc:resources/js/Pages/Dashboard/categories) - Mengelola kategori
+- [Transactions Management](mdc:resources/js/Pages/Dashboard/transactions) - Mengelola transaksi
+- [Shipments Management](mdc:resources/js/Pages/Dashboard/shipments) - Mengelola pengiriman
+- [Users Management](mdc:resources/js/Pages/Dashboard/users) - Mengelola pengguna
+
+## Integrasi UI
+
+Semua halaman menggunakan kombinasi dari:
+
+1. Komponene Vue.js dari direktori Components
+2. Styling dengan Tailwind CSS
+3. Integrasi dengan backend Laravel melalui Inertia.js
+4. Layout tertentu untuk setiap bagian aplikasi
+

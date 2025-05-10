@@ -1,0 +1,83 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Form Input Styling Guidelines
+
+## Standard Input Styling
+
+Semua input harus menggunakan styling yang konsisten untuk memastikan UI yang uniform:
+
+```html
+<!-- Standard Input Class -->
+class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+```
+
+## Input Types
+
+1. **Text Input**
+   - Gunakan komponen `TextInput` atau styling dengan class standard di atas
+   - Untuk input numerik, gunakan `type="text"` dengan validasi di backend
+
+2. **Select Input**
+   - Gunakan tag `select` native dengan styling class standard
+   - Styling yang benar:
+   ```html
+   <select v-model="form.field_name"
+      class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+      <option value="">Pilih opsi</option>
+      <option v-for="option in options" :key="option.value" :value="option.value">
+          {{ option.label }}
+      </option>
+   </select>
+   ```
+
+3. **Textarea**
+   - Gunakan tag `textarea` native dengan class standard:
+   ```html
+   <textarea v-model="form.field_name"
+      class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+      rows="3">
+   </textarea>
+   ```
+
+4. **Date/Time Input**
+   - Gunakan `type="datetime-local"` atau `type="date"` sesuai kebutuhan dengan class standard
+
+## Error State Styling
+
+Input dengan error validasi harus memiliki visual feedback:
+
+```html
+<input
+    class="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+    :class="{ 'border-red-500': form.errors.field_name }"
+    v-model="form.field_name"
+/>
+<InputError class="mt-2" :message="form.errors.field_name" />
+```
+
+## Form Grid Layout
+
+Gunakan grid untuk menyusun form dengan responsive layout:
+
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Form fields here -->
+</div>
+```
+
+## Label Styling
+
+Labels harus konsisten dan menunjukkan field wajib:
+
+```html
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    Nama Field <span class="text-red-500">*</span>
+</label>
+```
+
+## Dark Mode Support
+
+Semua input harus mendukung dark mode dengan benar sesuai class yang telah ditentukan.

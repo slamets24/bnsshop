@@ -1,0 +1,50 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Komponen UI
+
+Proyek ini menggunakan serangkaian komponen Vue.js yang dapat digunakan kembali, terletak di direktori [resources/js/Components](mdc:resources/js/Components).
+
+## Komponen Tombol
+
+- [PrimaryButton](mdc:resources/js/Components/PrimaryButton.vue) - Tombol utama untuk aksi positif
+- [SecondaryButton](mdc:resources/js/Components/SecondaryButton.vue) - Tombol sekunder untuk aksi tambahan
+- [DangerButton](mdc:resources/js/Components/DangerButton.vue) - Tombol untuk aksi berbahaya/hapus
+
+## Komponen Input
+
+- [TextInput](mdc:resources/js/Components/TextInput.vue) - Field input teks standar
+- [SelectInput](mdc:resources/js/Components/SelectInput.vue) - Dropdown select
+- [Checkbox](mdc:resources/js/Components/Checkbox.vue) - Checkbox input
+- [InputLabel](mdc:resources/js/Components/InputLabel.vue) - Label untuk input
+- [InputError](mdc:resources/js/Components/InputError.vue) - Pesan error untuk input
+
+## Komponen Navigasi
+
+- [Navbar](mdc:resources/js/Components/Navbar.vue) - Navigasi utama
+- [NavLink](mdc:resources/js/Components/NavLink.vue) - Link navigasi
+- [Dropdown](mdc:resources/js/Components/Dropdown.vue) - Menu dropdown
+- [DropdownLink](mdc:resources/js/Components/DropdownLink.vue) - Link dalam dropdown
+- [ResponsiveNavLink](mdc:resources/js/Components/ResponsiveNavLink.vue) - Link navigasi responsif
+
+## Komponen Layout
+
+- [SectionMain](mdc:resources/js/Components/SectionMain.vue) - Container utama
+- [SectionTitle](mdc:resources/js/Components/SectionTitle.vue) - Judul section
+- [SectionFullScreen](mdc:resources/js/Components/SectionFullScreen.vue) - Tampilan fullscreen
+- [Modal](mdc:resources/js/Components/Modal.vue) - Dialog modal
+- [ConfirmationModal](mdc:resources/js/Components/ConfirmationModal.vue) - Modal konfirmasi
+
+## Komponen Tabel
+
+- [TableCheckboxCell](mdc:resources/js/Components/TableCheckboxCell.vue) - Cell checkbox untuk tabel
+- [TableSampleClients](mdc:resources/js/Components/TableSampleClients.vue) - Contoh tabel klien
+
+## Komponen User
+
+- [UserAvatar](mdc:resources/js/Components/UserAvatar.vue) - Avatar pengguna
+- [UserAvatarCurrentUser](mdc:resources/js/Components/UserAvatarCurrentUser.vue) - Avatar pengguna yang login
+- [UserCard](mdc:resources/js/Components/UserCard.vue) - Kartu informasi pengguna
+

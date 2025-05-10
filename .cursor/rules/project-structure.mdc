@@ -1,0 +1,33 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Struktur Proyek KatonShop
+
+Ini adalah aplikasi web e-commerce berbasis Laravel dengan frontend menggunakan Inertia.js dan Vue.js.
+
+## Struktur Utama
+
+- [app](mdc:app) - Kode backend Laravel (Controllers, Models, dll)
+- [resources](mdc:resources) - Frontend code (Vue components, CSS, dll)
+- [routes](mdc:routes) - Definisi rute aplikasi
+- [database](mdc:database) - Migrations, seeders, dan factories
+- [config](mdc:config) - File konfigurasi Laravel
+
+## Frontend Structure
+
+Frontend dibangun dengan Vue.js dan terletak di direktori resources/js:
+
+- [resources/js/Components](mdc:resources/js/Components) - Komponen Vue yang dapat digunakan kembali
+- [resources/js/Layouts](mdc:resources/js/Layouts) - Layout dasar untuk halaman
+- [resources/js/Pages](mdc:resources/js/Pages) - Halaman Vue.js yang terhubung ke rute Laravel
+
+## Pola Utama
+
+Aplikasi ini menggunakan:
+- Laravel sebagai backend
+- Inertia.js sebagai jembatan antara Laravel dan Vue
+- Vue.js untuk frontend
+- Tailwind CSS untuk styling
+

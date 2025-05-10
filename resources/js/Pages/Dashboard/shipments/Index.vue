@@ -11,7 +11,8 @@ import SlideNotification from '@/Components/SlideNotification.vue';
 const props = defineProps({
     shipments: Object,
     filters: Object,
-    message: String
+    message: String,
+    pendingTransactions: Array
 });
 
 const search = ref(props.filters?.search || '');
@@ -29,25 +30,25 @@ const notification = ref({
 });
 
 const statusLabels = {
-    pending: 'Menunggu',
+    processing: 'Memproses',
     shipped: 'Dikirim',
     delivered: 'Diterima',
-    cancelled: 'Dibatalkan'
+    failed: 'Gagal'
 };
 
 const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
+    processing: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
     shipped: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
     delivered: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
 };
 
 const statusOptions = [
     { value: '', label: 'Semua Status' },
-    { value: 'pending', label: 'Menunggu' },
+    { value: 'processing', label: 'Memproses' },
     { value: 'shipped', label: 'Dikirim' },
     { value: 'delivered', label: 'Diterima' },
-    { value: 'cancelled', label: 'Dibatalkan' }
+    { value: 'failed', label: 'Gagal' }
 ];
 
 const deleteShipment = (shipment) => {
@@ -165,6 +166,95 @@ const formatDate = (date) => {
                         </li>
                     </ol>
                 </nav>
+
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-lg font-semibold mb-4">Transaksi Online Menunggu</h3>
+
+                        <div class="overflow-x-auto">
+                            <table v-if="pendingTransactions && pendingTransactions.length > 0"
+                                class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            No
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Kode Transaksi
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Total
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Tipe Order
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Tanggal
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Aksi
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr v-for="(transaction, index) in pendingTransactions" :key="transaction.id">
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ index + 1 }}
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ transaction.transaction_code }}
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ formatPrice(transaction.total) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300">
+                                                Menunggu
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                                                Online
+                                            </span>
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {{ formatDate(transaction.created_at) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-3">
+                                                <Link
+                                                    :href="route('dashboard.shipments.create-from-pending', transaction.id)"
+                                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-sm"
+                                                    title="Buat Pengiriman">
+                                                Buat Pengiriman
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <p class="text-lg">Tidak ada transaksi online yang menunggu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -304,7 +394,7 @@ const formatDate = (date) => {
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                                 </Link>
-                                                <button v-if="shipment.status === 'cancelled'"
+                                                <button v-if="shipment.status === 'failed'"
                                                     @click="deleteShipment(shipment)"
                                                     class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                                     title="Hapus Pengiriman">
@@ -494,7 +584,7 @@ const formatDate = (date) => {
             </div>
         </Modal>
 
-        <SlideNotification :show="notification.show" :type="notification.type" :message="notification.message"
-            @close="notification.show = false" />
+        <SlideNotification :show="notification?.show || false" :type="notification?.type || 'success'"
+            :message="notification?.message || ''" @close="notification.show = false" />
     </AuthenticatedLayout>
 </template>

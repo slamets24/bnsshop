@@ -1,0 +1,34 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Model dan Relasi Database
+
+Aplikasi ini menggunakan beberapa model untuk menyimpan dan mengelola data.
+
+## Model Utama
+
+- [Product](mdc:app/Models/Product.php) - Produk yang dijual dalam toko
+- [Category](mdc:app/Models/Category.php) - Kategori untuk produk
+- [Transaction](mdc:app/Models/Transaction.php) - Transaksi pembelian
+- [User](mdc:app/Models/User.php) - Pengguna aplikasi (admin dan pelanggan)
+
+## Model Pendukung
+
+- [ProductImage](mdc:app/Models/ProductImage.php) - Gambar untuk produk
+- [ProductLink](mdc:app/Models/ProductLink.php) - Link eksternal untuk produk
+- [Shipment](mdc:app/Models/Shipment.php) - Informasi pengiriman
+- [ShippingAddress](mdc:app/Models/ShippingAddress.php) - Alamat pengiriman
+- [TransactionItem](mdc:app/Models/TransactionItem.php) - Item dalam transaksi
+
+## Relasi Utama
+
+- Product → Category (Many-to-One): Produk milik satu kategori
+- Product → ProductImage (One-to-Many): Produk memiliki banyak gambar
+- Product → ProductLink (One-to-Many): Produk memiliki beberapa link eksternal
+- Transaction → User (Many-to-One): Transaksi milik satu pengguna
+- Transaction → TransactionItem (One-to-Many): Transaksi memiliki banyak item
+- Transaction → ShippingAddress (One-to-One): Transaksi memiliki satu alamat pengiriman
+- Transaction → Shipment (One-to-One): Transaksi memiliki satu pengiriman
+

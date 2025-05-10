@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->except(['show'])
             ->parameters(['transactions' => 'transaction:transaction_code']);
         Route::resource('shipments', ShipmentController::class)->except(['show']);
+        Route::get('/shipments/create-from-pending/{transaction_id}', [ShipmentController::class, 'createFromPending'])->name('shipments.create-from-pending');
         Route::resource('users', UserController::class)->except(['show']);
         Route::delete('/products/{product}/images/{image}', [ProductController::class, 'deleteImage'])->name('products.images.delete');
         Route::put('/products/{product}/links', [ProductController::class, 'updateLinks'])->name('products.links.update');

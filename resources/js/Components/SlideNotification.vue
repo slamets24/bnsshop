@@ -1,9 +1,12 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue';
 import { TransitionRoot } from '@headlessui/vue';
-import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
+    show: {
+        type: Boolean,
+        default: false
+    },
     message: {
         type: String,
         required: true
@@ -20,9 +23,11 @@ let timeout;
 
 onMounted(() => {
     // Auto close after 3 seconds
-    timeout = setTimeout(() => {
-        emit('close');
-    }, 3000);
+    if (props.show) {
+        timeout = setTimeout(() => {
+            emit('close');
+        }, 3000);
+    }
 });
 
 onUnmounted(() => {
@@ -31,7 +36,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <TransitionRoot appear :show="true" as="template" enter="transform transition ease-in-out duration-500"
+    <TransitionRoot appear :show="show" as="template" enter="transform transition ease-in-out duration-500"
         enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500"
         leave-from="translate-x-0" leave-to="translate-x-full">
         <div class="fixed right-0 top-16 z-50 mx-4 w-full max-w-sm overflow-hidden rounded-lg shadow-lg" :class="{
@@ -40,10 +45,19 @@ onUnmounted(() => {
         }">
             <div class="p-4">
                 <div class="flex items-start">
+                    <!-- Success Icon -->
                     <div class="flex-shrink-0">
-                        <CheckCircleIcon v-if="type === 'success'" class="h-6 w-6 text-green-400 dark:text-green-300"
-                            aria-hidden="true" />
-                        <XCircleIcon v-else class="h-6 w-6 text-red-400 dark:text-red-300" aria-hidden="true" />
+                        <svg v-if="type === 'success'" class="h-6 w-6 text-green-400 dark:text-green-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <!-- Error Icon -->
+                        <svg v-else class="h-6 w-6 text-red-400 dark:text-red-300" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
                     <div class="ml-3 w-0 flex-1 pt-0.5">
                         <p class="text-sm font-medium" :class="{
@@ -60,7 +74,12 @@ onUnmounted(() => {
                                 'text-red-500 hover:text-red-600 focus:ring-red-500 focus:ring-offset-red-50 dark:text-red-300 dark:hover:text-red-400': type === 'error'
                             }" @click="$emit('close')">
                             <span class="sr-only">Close</span>
-                            <XMarkIcon class="h-5 w-5" />
+                            <!-- Close Icon -->
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
                 </div>

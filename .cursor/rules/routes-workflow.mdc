@@ -1,0 +1,46 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Rute dan Alur Aplikasi
+
+Aplikasi ini memiliki beberapa bagian utama yang ditentukan dalam file [routes/web.php](mdc:routes/web.php).
+
+## Rute Frontend (Publik)
+
+- `/` - Halaman utama ([FrontendController@welcome](mdc:app/Http/Controllers/FrontendController.php))
+- `/products` - Daftar semua produk ([FrontendController@products](mdc:app/Http/Controllers/FrontendController.php))
+- `/products/{category:name}/{product:slug}` - Detail produk ([FrontendController@productDetail](mdc:app/Http/Controllers/FrontendController.php))
+- `/categories` - Daftar kategori ([FrontendController@categories](mdc:app/Http/Controllers/FrontendController.php))
+- `/categories/{category:name}` - Produk dalam kategori ([FrontendController@categoryProducts](mdc:app/Http/Controllers/FrontendController.php))
+
+## Rute Order/Pembelian
+
+- `/checkout/{product}` - Halaman checkout ([OrderController@checkout](mdc:app/Http/Controllers/Frontend/OrderController.php))
+- `/order` - Menyimpan pesanan ([OrderController@store](mdc:app/Http/Controllers/Frontend/OrderController.php))
+- `/order/success/{trackingToken}` - Konfirmasi pesanan berhasil ([OrderController@success](mdc:app/Http/Controllers/Frontend/OrderController.php))
+
+## Rute Dashboard (Administrator)
+
+Semua rute dibawah `/dashboard` memerlukan autentikasi:
+
+- `/dashboard` - Overview dashboard ([DashboardController@index](mdc:app/Http/Controllers/DashboardController.php))
+- `/dashboard/products` - Mengelola produk ([ProductController](mdc:app/Http/Controllers/ProductController.php))
+- `/dashboard/categories` - Mengelola kategori ([CategoryController](mdc:app/Http/Controllers/CategoryController.php))
+- `/dashboard/transactions` - Mengelola transaksi ([TransactionController](mdc:app/Http/Controllers/TransactionController.php))
+- `/dashboard/shipments` - Mengelola pengiriman ([ShipmentController](mdc:app/Http/Controllers/ShipmentController.php))
+- `/dashboard/users` - Mengelola pengguna ([UserController](mdc:app/Http/Controllers/UserController.php))
+
+## Rute Autentikasi
+
+- Rute autentikasi standar Laravel dengan Breeze/Inertia didefinisikan di [routes/auth.php](mdc:routes/auth.php)
+
+## Alur Utama Aplikasi
+
+1. Pengguna melihat produk di halaman depan atau kategori
+2. Pengguna memilih produk dan melihat detailnya
+3. Pengguna memulai checkout
+4. Pengguna memasukkan detail dan menyelesaikan pemesanan
+5. Admin melihat transaksi baru di dashboard dan memprosesnya
+
